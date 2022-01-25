@@ -59,7 +59,7 @@ function Titulo(props) {
 //export default HomePage
 
 export default function PaginaInicial() {
-    const username = 'peas';
+    const username = 'MarioMess';
 
     return (
         <>
@@ -81,7 +81,7 @@ export default function PaginaInicial() {
                             xs: 'column',
                             sm: 'row',
                         },
-                        width: '100%', maxWidth: '700px',
+                        width: '100%', maxWidth: '500px',
                         borderRadius: '5px', padding: '32px', margin: '16px',
                         boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                         backgroundColor: appConfig.theme.colors.neutrals[700],
