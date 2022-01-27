@@ -65,8 +65,8 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
-                        onSubimit={function (infosDoEvento) {
-                            infosDoEvento.prevenDefault();                            
+                        onSubmit={function (infosDoEvento) {
+                            infosDoEvento.preventDefault();                            
                             console.log('alguem está submetendo uma chamada')
                             roteamento.push('/chat');                            
                         }}
