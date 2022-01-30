@@ -2,7 +2,7 @@
 
 Projeto feito na Imersão React 4 da @alura com @Mário Souto e o @Paulo Silveira
 
-#https://alura-cord-mauve.vercel.app/
+# https://alura-cord-mauve.vercel.app/
 
 ## Tecnologias
 
