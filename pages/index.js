@@ -1,7 +1,7 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 
 
 function Titulo(props) {
@@ -35,11 +35,11 @@ function Titulo(props) {
 export default function PaginaInicial() {
     //const username = 'MarioMess';
     const [username, setUsername] = React.useState('');
-    const roteamento = useRouter();    
+    const roteamento = useRouter();
     const imagemDeEspera = 'https://media4.giphy.com/media/h1XpVxoiszxDQ3SE0R/200w.gif?cid=82a1493b2rm9sbnnxmpl4z98djqqac75vlxdsjzkugvbmbso&rid=200w.gif&ct=g';
 
     return (
-        <>         
+        <>
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -67,9 +67,9 @@ export default function PaginaInicial() {
                     <Box
                         as="form"
                         onSubmit={function (infosDoEvento) {
-                            infosDoEvento.preventDefault();                            
+                            infosDoEvento.preventDefault();
                             console.log('alguem está submetendo uma chamada')
-                            roteamento.push(`/chat?username=${username}`);                                                      
+                            roteamento.push(`/chat?username=${username}`);
                         }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -89,10 +89,17 @@ export default function PaginaInicial() {
                         />*/}
 
                         <TextField
-                            value={username} onChange={function (event) {
+                            value={username}
+                            placeholder='Digite seu usuário GitHub'
+                            onChange={function (event) {
                                 console.log('usuario digitou')
                                 const valor = event.target.value;
-                                setUsername(valor);
+                                if (username.length < 2) {
+                                    const valor = event.target.value;
+                                    setUsername(valor);
+                                } else {
+                                    setUsername(valor);
+                                }
                             }}
                             fullWidth
                             textFieldColors={{
@@ -107,6 +114,7 @@ export default function PaginaInicial() {
                         <Button
                             type='submit'
                             label='Entrar'
+                            disabled={username.length <= 2}
                             fullWidth
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -141,9 +149,9 @@ export default function PaginaInicial() {
                                 marginBottom: '16px',
                             }}
                             src={
-                                username.length>2
-                                ?`https://github.com/${username}.png`
-                                :imagemDeEspera
+                                username.length > 2
+                                    ? `https://github.com/${username}.png`
+                                    : imagemDeEspera
                             }
                         />
                         <Text
@@ -155,7 +163,7 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
-                            {username}
+                            {username || "Entrar com usuário Válido"}
                         </Text>
                     </Box>
                     {/* Photo Area */}
