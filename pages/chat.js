@@ -2,47 +2,66 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM4MzA3MSwiZXhwIjoxOTU4OTU5MDcxfQ.zCuBQz654KTvZeyJhgkzRL8WtJRHqvbULAgN7EjLQvQ';
-const SUPABASE_URL =  'https://inpouqvjbwfyupfphzfp.supabase.co'; 
+const SUPABASE_URL = 'https://inpouqvjbwfyupfphzfp.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function escutaMensagensEmTempoReal (adicionaMensagem) {
+    return supabaseClient
+    .from('mensagens')
+    .on('INSERT', (respostaLive) => {
+        adicionaMensagem(respostaLive.new);
+    })
+    .subscribe();
+}
 
 
 export default function ChatPage() {
 
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+    const roteamento = useRouter();
+    const usuarioLogado = roteamento.query.username;
 
     React.useEffect(() => {
         supabaseClient
-        .from('mensagens')
-        .select('*')
-        .order('id', {ascending: false})
-        .then(({ data }) => {      
-        setListaDeMensagens(data);
-     });
-}, []);
+            .from('mensagens')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+                setListaDeMensagens(data);
+            });
 
-    
+          const subscribe = escutaMensagensEmTempoReal((novaMensagem) =>{
+                setListaDeMensagens((valoaAtualDaLista) =>{
+                    return[
+                        novaMensagem,
+                        ...listaDeMensagens
+                    ]
+                });                
+            });
+            return() =>{
+                subscribe.unsubscribe();
+            }
+    }, []);
 
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-           // id: listaDeMensagens.length + 1,
-            de: '',
+            // id: listaDeMensagens.length + 1,
+            de: usuarioLogado,
             texto: novaMensagem,
         };
 
         supabaseClient
             .from('mensagens')
             .insert([mensagem
-                
-            ]).then(({data}) =>{
-                setListaDeMensagens([           
-                    data[0],
-                    ...listaDeMensagens,    
-                ]);
+
+            ]).then(({ data }) => {
             });
-       
+
         setMensagem('');
     }
 
@@ -50,9 +69,9 @@ export default function ChatPage() {
         <Box
             styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: appConfig.theme.colors.primary['050'],
-                    backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2020/12/bright-gaming-room-setup-1536x864.jpg)',
-                    backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+                backgroundColor: appConfig.theme.colors.primary['050'],
+                backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2020/12/bright-gaming-room-setup-1536x864.jpg)',
+                backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
             }}
         >
             <Box
@@ -127,6 +146,11 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
+                        <ButtonSendSticker
+                            onStickerClick={(sticker)=>{
+                                handleNovaMensagem(':sticker:' + sticker);
+                            }}
+                        />
                     </Box>
                 </Box>
             </Box>
@@ -144,7 +168,7 @@ function Header() {
                 <Button
                     variant='secondary'
                     //colorVariant='light'
-                
+
                     label='Logout'
                     href="/"
                 />
@@ -154,12 +178,12 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log(props);
+   // console.log(props);
     return (
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'auto',                
+                overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -174,10 +198,10 @@ function MessageList(props) {
                         tag="li"
                         styleSheet={{
                             borderRadius: '5px',
-                            padding: '6px',                            
+                            padding: '6px',
                             marginBottom: '12px',
                             fontSize: '15px',
-                            fontFamily:'Arial',
+                            fontFamily: 'Arial',
                             hover: {
                                 backgroundColor: appConfig.theme.colors.neutrals[700],
                             }
@@ -212,7 +236,16 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {mensagem.texto}
+
+                        {
+                            mensagem.texto.startsWith(':sticker:')
+                                ? (<Image src={mensagem.texto.replace(':sticker:', '')} />
+                                )
+                                : (
+                                    mensagem.texto
+                                )
+                        }
+                     
                     </Text>
                 );
             })}

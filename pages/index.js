@@ -36,6 +36,7 @@ export default function PaginaInicial() {
     //const username = 'MarioMess';
     const [username, setUsername] = React.useState('');
     const roteamento = useRouter();    
+    const imagemDeEspera = 'https://media4.giphy.com/media/h1XpVxoiszxDQ3SE0R/200w.gif?cid=82a1493b2rm9sbnnxmpl4z98djqqac75vlxdsjzkugvbmbso&rid=200w.gif&ct=g';
 
     return (
         <>         
@@ -68,7 +69,7 @@ export default function PaginaInicial() {
                         onSubmit={function (infosDoEvento) {
                             infosDoEvento.preventDefault();                            
                             console.log('alguem está submetendo uma chamada')
-                            roteamento.push('/chat');                            
+                            roteamento.push(`/chat?username=${username}`);                                                      
                         }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -88,7 +89,7 @@ export default function PaginaInicial() {
                         />*/}
 
                         <TextField
-                            value={username} onChange={function handler(event) {
+                            value={username} onChange={function (event) {
                                 console.log('usuario digitou')
                                 const valor = event.target.value;
                                 setUsername(valor);
@@ -139,7 +140,11 @@ export default function PaginaInicial() {
                                 borderRadius: '50%',
                                 marginBottom: '16px',
                             }}
-                            src={`https://github.com/${username}.png`}
+                            src={
+                                username.length>2
+                                ?`https://github.com/${username}.png`
+                                :imagemDeEspera
+                            }
                         />
                         <Text
                             variant="body4"
